@@ -28,45 +28,45 @@ export default function Chats() {
   return (
     <div
       ref={menuRef}
-      className={`fixed top-0 left-0 h-full w-64 bg-gray-800 transform transition-transform duration-300 ease-in-out z-50 ${
-        isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      className={`position-fixed top-0 start-0 vh-100 bg-dark text-white p-3 shadow transition-transform ${
+        isMenuOpen ? 'translate-x-0' : 'translate-x-n100'
       }`}
+      style={{
+        width: '250px',
+        zIndex: 1050,
+        transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.3s ease-in-out',
+      }}
     >
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Chats</h2>
-          <button
-            onClick={() => dispatch(toggleMenu())}
-            className="p-2 rounded-md hover:bg-gray-700"
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="h5 mb-0">Chats</h2>
+        <button
+          className="btn btn-sm btn-outline-light"
+          onClick={() => dispatch(toggleMenu())}
+          aria-label="Close sidebar"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="currentColor"
+            className="bi bi-x"
+            viewBox="0 0 16 16"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <div className="space-y-4">
-          <button className="w-full text-left p-2 rounded-md hover:bg-gray-700">
-            New Chat
-          </button>
-          <div className="border-t border-gray-700 my-4"></div>
-          <div className="space-y-2">
-            <button className="w-full text-left p-2 rounded-md hover:bg-gray-700">
-              Chat History 1
-            </button>
-            <button className="w-full text-left p-2 rounded-md hover:bg-gray-700">
-              Chat History 2
-            </button>
-          </div>
-        </div>
+            <path d="M4.646 4.646a.5.5 0 011 0L8 6.293l2.354-2.647a.5.5 0 111 .708L9.707 7l2.647 2.354a.5.5 0 01-.708 1L8 7.707 5.646 10.06a.5.5 0 11-.708-.708L6.293 7 3.646 4.646a.5.5 0 011-.708z" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="d-grid gap-2 mb-4">
+        <button className="btn btn-secondary text-start">New Chat</button>
+      </div>
+
+      <hr className="border-secondary" />
+
+      <div className="d-grid gap-2">
+        <button className="btn btn-outline-light text-start">Chat History 1</button>
+        <button className="btn btn-outline-light text-start">Chat History 2</button>
       </div>
     </div>
   );

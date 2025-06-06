@@ -1,13 +1,13 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleMenu } from '@/store/features/chatSlice';
-import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 export default function Navbar() {
   const dispatch = useDispatch();
+  const isMenuOpen = useSelector((state: RootState) => state.chat.isMenuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -15,8 +15,6 @@ export default function Navbar() {
       dispatch(toggleMenu());
     }
   };
-
-  const isMenuOpen = useSelector((state: RootState) => state.chat.isMenuOpen);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -28,18 +26,34 @@ export default function Navbar() {
   }, [isMenuOpen, dispatch]);
 
   return (
-    <nav className="bg-gray-900 text-white p-4 relative">
-      <div className="flex items-center justify-between">
-        {/* Hamburger Menu Button */}  
+    <nav className="navbar navbar-dark bg-dark px-3">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        {/* Hamburger Menu Button */}
         <button
           onClick={() => dispatch(toggleMenu())}
-          className="p-1 rounded-xl border hover:bg-gray-800 focus:outline-none">
-          Button
+          className="btn btn-outline-light rounded-circle"
+          aria-label="Toggle sidebar"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="currentColor"
+            className="bi bi-list"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              d="M2.5 12a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm0-4.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm0-4.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11z"
+            />
+          </svg>
         </button>
 
         {/* App Title */}
-        <h1 className="text-xl font-bold">ChatGPT Clone</h1>
-        <div className="w-6"></div>
+        <span className="navbar-brand mb-0 h1">ChatGPT Clone</span>
+
+        {/* Empty space for alignment */}
+        <div style={{ width: '40px' }}></div>
       </div>
     </nav>
   );
