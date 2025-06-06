@@ -26,35 +26,65 @@ export default function Navbar() {
   }, [isMenuOpen, dispatch]);
 
   return (
-    <nav className="navbar navbar-dark bg-dark px-3">
+    <nav className="navbar navbar-dark bg-dark">
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Hamburger Menu Button */}
         <button
           onClick={() => dispatch(toggleMenu())}
-          className="btn btn-outline-light rounded-circle"
+          className="p-0 bg-transparent border-0"
+          style={{ height: '20px', width: '20px' }}
           aria-label="Toggle sidebar"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            fill="currentColor"
-            className="bi bi-list"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fillRule="evenodd"
-              d="M2.5 12a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm0-4.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm0-4.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11z"
-            />
-          </svg>
+          <HamburgerMenuButton isMenuOpen={isMenuOpen} />
         </button>
 
         {/* App Title */}
         <span className="navbar-brand mb-0 h1">ChatGPT Clone</span>
 
         {/* Empty space for alignment */}
-        <div style={{ width: '40px' }}></div>
+        <span style={{ width: "2%" }}></span>
       </div>
     </nav>
   );
 }
+
+function HamburgerMenuButton({ isMenuOpen }: { isMenuOpen: boolean }) {
+  return (
+    <div className="hamburger-icon" style={{ width: '24px', height: '18px', position: 'relative' }}>
+      <span
+        style={{
+          position: 'absolute',
+          height: '2px',
+          width: '100%',
+          backgroundColor: 'white',
+          top: isMenuOpen ? '8px' : '0',
+          transform: isMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+          transition: '0.3s',
+        }}
+      ></span>
+      <span
+        style={{
+          position: 'absolute',
+          height: '2px',
+          width: '100%',
+          backgroundColor: 'white',
+          top: '8px',
+          opacity: isMenuOpen ? 0 : 1,
+          transition: '0.3s',
+        }}
+      ></span>
+      <span
+        style={{
+          position: 'absolute',
+          height: '2px',
+          width: '100%',
+          backgroundColor: 'white',
+          top: isMenuOpen ? '8px' : '16px',
+          transform: isMenuOpen ? 'rotate(-45deg)' : 'rotate(0deg)',
+          transition: '0.3s',
+        }}
+      ></span>
+    </div>
+  );
+}
+
