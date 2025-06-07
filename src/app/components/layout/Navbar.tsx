@@ -5,9 +5,44 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleMenu, setSelectedModel } from '@/store/features/chatSlice';
 import { RootState } from '@/store/store';
 
+function ModelSelector() {
+  const dispatch = useDispatch();
+  const { models, selectedModel } = useSelector((state: RootState) => state.chat);
+
+  const handleModelSelect = (model: typeof models[0]) => {
+    dispatch(setSelectedModel(model));
+  };
+
+  return (
+    <div className="dropdown">
+      <button 
+        className="btn btn-secondary dropdown-toggle" 
+        type="button" 
+        id="dropdownMenuButton" 
+        data-bs-toggle="dropdown" 
+        aria-haspopup="true" 
+        aria-expanded="false"
+      >
+        {selectedModel.name}
+      </button>
+      <div className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+        {models.map((model) => (
+          <button 
+            key={model.id}
+            className={`dropdown-item ${model.id === selectedModel.id ? 'active' : ''}`}
+            onClick={() => handleModelSelect(model)}
+          >
+            {model.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const dispatch = useDispatch();
-  const { isMenuOpen, models, selectedModel } = useSelector((state: RootState) => state.chat);
+  const isMenuOpen = useSelector((state: RootState) => state.chat.isMenuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -24,10 +59,6 @@ export default function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen, dispatch]);
-
-  const handleModelSelect = (model: typeof models[0]) => {
-    dispatch(setSelectedModel(model));
-  };
 
   return (
     <nav className="navbar navbar-dark bg-dark"
@@ -47,30 +78,9 @@ export default function Navbar() {
 
         {/* App Title */}
         <span className="navbar-brand mb-0 h1">ChatGPT Clone</span>
-        { /* Model selector dropdown */}
-        <div className="dropdown">
-          <button 
-            className="btn btn-secondary dropdown-toggle" 
-            type="button" 
-            id="dropdownMenuButton" 
-            data-bs-toggle="dropdown" 
-            aria-haspopup="true" 
-            aria-expanded="false"
-          >
-            {selectedModel.name}
-          </button>
-          <div className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-            {models.map((model) => (
-              <button 
-                key={model.id}
-                className={`dropdown-item ${model.id === selectedModel.id ? 'active' : ''}`}
-                onClick={() => handleModelSelect(model)}
-              >
-                {model.name}
-              </button>
-            ))}
-          </div>
-        </div>
+        
+        {/* Model selector dropdown */}
+        <ModelSelector />
       </div>
     </nav>
   );
