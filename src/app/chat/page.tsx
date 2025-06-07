@@ -3,14 +3,38 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addMessage, createNewChat } from '@/store/features/chatSlice';
+import { useUser } from '@auth0/nextjs-auth0';
+import { useRouter } from 'next/navigation';
 
 export default function ChatPage() {
+  const { user, error, isLoading } = useUser();
+  const router = useRouter();
+
   const dispatch = useAppDispatch();
   const currentChat = useAppSelector((state) =>
     state.chat.chats.find(chat => chat.id === state.chat.currentChatId)
   );
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!user && !isLoading) {
+      router.push('/auth/login');
+    }
+  }, [user, isLoading, router]);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+    }
+  }, [input]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  if (!user) return <div>Not logged in</div>;
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -44,15 +68,6 @@ export default function ChatPage() {
     sendMessage();
   };
 
-  // ✅ Auto-grow textarea height
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto'; // Reset height
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`; // Grow up to 160px
-    }
-  }, [input]);
-
   return (
     <div className="container">
       <form onSubmit={handleSubmit}>
@@ -68,7 +83,7 @@ export default function ChatPage() {
               style={{
                 resize: 'none',
                 overflow: 'hidden',
-                maxHeight: '160px', // Optional hard cap
+                maxHeight: '160px',
               }}
             />
           </div>
