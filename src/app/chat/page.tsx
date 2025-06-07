@@ -55,23 +55,47 @@ export default function ChatPage() {
 
   return (
     <div className="container">
-      <form className="input-group" onSubmit={handleSubmit}>
-        <textarea
-          ref={textareaRef}
-          className="form-control"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask something..."
-          rows={1}
-          style={{
-            resize: 'none',
-            overflow: 'hidden',
-            maxHeight: '160px', // Optional hard cap
-          }}
-        />
-        <button type="submit" className="btn btn-primary">
-          Send
-        </button>
+      <form onSubmit={handleSubmit}>
+        <div className="d-flex gap-2">
+          <div className="flex-grow-1 position-relative">
+            <textarea
+              ref={textareaRef}
+              className="form-control"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask something..."
+              rows={1}
+              style={{
+                resize: 'none',
+                overflow: 'hidden',
+                maxHeight: '160px', // Optional hard cap
+              }}
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary rounded-circle flex-shrink-0 align-self-end mb-2"
+            style={{
+              width: '40px',
+              height: '40px',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              fill="currentColor" 
+              className="bi bi-send" 
+              viewBox="0 0 16 16"
+            >
+              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.916-.314l-.598-1.955-5.454 5.454a.5.5 0 0 1-.707-.707l5.454-5.454-1.955-.598a.5.5 0 0 1 .314-.916L15.314.036a.5.5 0 0 1 .54.11z"/>
+            </svg>
+          </button>
+        </div>
       </form>
     </div>
   );
