@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { toggleMenu } from '@/store/features/chatSlice';
+import { toggleMenu, createNewChat, setCurrentChat } from '@/store/features/chatSlice';
 
 export default function Chats() {
   const dispatch = useAppDispatch();
-  const { isMenuOpen } = useAppSelector((state) => state.chat);
+  const { isMenuOpen, chats, currentChatId } = useAppSelector((state) => state.chat);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +24,14 @@ export default function Chats() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen, dispatch]);
+
+  const handleNewChat = () => {
+    dispatch(createNewChat());
+  };
+
+  const handleChatSelect = (chatId: string) => {
+    dispatch(setCurrentChat(chatId));
+  };
 
   return (
     <div
@@ -59,14 +67,30 @@ export default function Chats() {
       </div>
 
       <div className="d-grid gap-2 mb-4">
-        <button className="btn btn-secondary text-start">New Chat</button>
+        <button 
+          className="btn btn-secondary text-start"
+          onClick={handleNewChat}
+        >
+          New Chat
+        </button>
       </div>
 
       <hr className="border-secondary" />
 
       <div className="d-grid gap-2">
-        <button className="btn btn-outline-light text-start">Chat History 1</button>
-        <button className="btn btn-outline-light text-start">Chat History 2</button>
+        {chats.map((chat) => (
+          <button
+            key={chat.id}
+            className={`btn text-start ${
+              chat.id === currentChatId 
+                ? 'btn-primary' 
+                : 'btn-outline-light'
+            }`}
+            onClick={() => handleChatSelect(chat.id)}
+          >
+            {chat.title}
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -26,7 +26,10 @@ export default function Navbar() {
   }, [isMenuOpen, dispatch]);
 
   return (
-    <nav className="navbar navbar-dark bg-dark">
+    <nav className="navbar navbar-dark bg-dark"
+    style={{
+      position: 'relative',
+    }}>
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Hamburger Menu Button */}
         <button
