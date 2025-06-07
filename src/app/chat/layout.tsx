@@ -1,4 +1,4 @@
-import Messages from "../components/Messages";
+import Messages from "../components/chat/Messages";
 
 export const metadata = {
   title: 'Chat Page',

@@ -13,16 +13,39 @@ interface Chat {
   messages: Message[];
 }
 
+interface Model {
+  id: number;
+  name: string;
+  value: string;
+}
+
 interface ChatState {
   chats: Chat[];
   currentChatId: string | null;
   isMenuOpen: boolean;
+  models: Model[];
+  selectedModel: Model;
 }
+
+const models: Model[] = [
+  {
+    id: 1,
+    name: "GPT-4",
+    value: "gpt-4"
+  },
+  {
+    id: 2,
+    name: "GPT-4o",
+    value: "gpt-4o"
+  },
+];
 
 const initialState: ChatState = {
   chats: [],
   currentChatId: null,
   isMenuOpen: false,
+  models: models,
+  selectedModel: models[0], // Default to first model
 };
 
 const chatSlice = createSlice({
@@ -62,6 +85,9 @@ const chatSlice = createSlice({
         chat.title = title;
       }
     },
+    setSelectedModel: (state, action: PayloadAction<Model>) => {
+      state.selectedModel = action.payload;
+    },
   },
 });
 
@@ -71,6 +97,7 @@ export const {
   setCurrentChat,
   addMessage,
   updateChatTitle,
+  setSelectedModel,
 } = chatSlice.actions;
 
 export default chatSlice.reducer; 

@@ -21,7 +21,7 @@ export default function Messages() {
     <div 
       className="container w-100 bg-secondary d-flex justify-content-center align-items-start flex-grow-1"
       style={{
-        height: 'calc(100vh - 200px)', // Adjust this value based on your layout
+        height: 'calc(100vh - 150px)', // Adjust this value based on your layout
         overflowY: 'auto',
         position: 'relative'
       }}

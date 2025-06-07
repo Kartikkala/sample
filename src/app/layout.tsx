@@ -3,10 +3,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
-import Chats from "./components/Chats";
+import Chats from "./components/chat/Chats";
+import BootstrapClient from '@/app/components/layout/BootstrapClient';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,8 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-100 d-flex flex-column `}>
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-100`}>
         <Provider store={store}>
+          <BootstrapClient />
           <Navbar />
           <Chats/>
           {children}
