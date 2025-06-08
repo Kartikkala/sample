@@ -84,6 +84,11 @@ export default function Chats() {
           </button>
         ))}
       </div>
+      <div className="d-grid gap-2 mt-2">
+        <a href="/auth/logout" className="btn second-background-color first-text-color text-center rounded-pill d-flex align-items-center justify-content-center gap-2">
+          Logout
+        </a>
+      </div>
     </div>
   );
 }
