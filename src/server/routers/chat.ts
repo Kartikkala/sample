@@ -41,19 +41,15 @@ export const chatRouter = t.router({
 
   createChat: t.procedure
     .input(z.object({ 
-      userId: z.string(),
-      firstMessage: z.string()
+      userId: z.string()
     }))
     .mutation(async ({ input }) => {
-      // Generate a title based on the first message
-      const title = await generateChatTitle(input.firstMessage);
-
       const { data: chat, error } = await supabase
         .from('chats')
         .insert([
           {
             user_id: input.userId,
-            title
+            title: 'New Chat' // Default title until first message
           }
         ])
         .select()
@@ -71,6 +67,23 @@ export const chatRouter = t.router({
       isUser: z.boolean() 
     }))
     .mutation(async ({ input }) => {
+      // If this is the first user message, generate a title
+      if (input.isUser && input.content) {
+        const { data: existingMessages } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('chat_id', input.chatId)
+          .eq('is_user', true);
+
+        if (!existingMessages || existingMessages.length === 0) {
+          const title = await generateChatTitle(input.content);
+          await supabase
+            .from('chats')
+            .update({ title })
+            .eq('id', input.chatId);
+        }
+      }
+
       const { data, error } = await supabase
         .from('messages')
         .insert({

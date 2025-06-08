@@ -82,8 +82,7 @@ export default function ChatPage() {
     try {
       if (!currentChat) {
         const result = await dispatch(createNewChat({ 
-          userId: user.sub!,
-          firstMessage: input 
+          userId: user.sub!
         })).unwrap();
         await dispatch(setCurrentChat(result.id));
         await dispatch(addMessage({
