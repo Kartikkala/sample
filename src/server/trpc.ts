@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 import { askGemini } from './gemini';
 import { chatRouter } from './routers/chat';
@@ -10,9 +9,13 @@ export const appRouter = t.router({
       return { greeting: `Hello` };
     }),
   askGemini: t.procedure
-    .input(z.object({ prompt: z.string(), modelId: z.string() }))
+    .input(z.object({ 
+      prompt: z.string(),
+      modelId: z.string()
+    }))
     .mutation(async ({ input }) => {
-      return { response: await askGemini(input.prompt, input.modelId) };
+      const response = await askGemini(input.prompt, input.modelId);
+      return { response };
     }),
   chat: chatRouter,
 });

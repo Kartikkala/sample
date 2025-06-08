@@ -9,7 +9,7 @@ export const availableModels: Model[] = [
     name: 'gemini-2.0-flash',
   },
   {
-    id: 'gemini-1.5-flash',
-    name: 'gemini-1.5-flash'
+    id: 'gemini-2.0-flash-preview-image-generation',
+    name: 'gemini-2.0-flash-preview-image-generation'
   }
 ]; 

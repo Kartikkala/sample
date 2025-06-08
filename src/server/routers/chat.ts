@@ -57,25 +57,25 @@ export const chatRouter = t.router({
     }),
 
   addMessage: t.procedure
-    .input(z.object({
-      chatId: z.string(),
-      content: z.string(),
-      isUser: z.boolean()
+    .input(z.object({ 
+      chatId: z.string(), 
+      content: z.string().optional(),
+      imageData: z.string().optional(),
+      isUser: z.boolean() 
     }))
     .mutation(async ({ input }) => {
-      const { data: message, error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
-        .insert([
-          {
-            chat_id: input.chatId,
-            content: input.content,
-            is_user: input.isUser
-          }
-        ])
+        .insert({
+          chat_id: input.chatId,
+          content: input.content,
+          image_data: input.imageData,
+          is_user: input.isUser
+        })
         .select()
         .single();
 
       if (error) throw error;
-      return message;
+      return data;
     })
 }); 

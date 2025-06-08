@@ -22,11 +22,33 @@ export default function ChatPage() {
   const askGeminiMutation = trpc.askGemini.useMutation({
     onSuccess: (data) => {
       if (currentChat) {
-        dispatch(addMessage({
-          chatId: currentChat.id,
-          content: data.response || '',
-          isUser: false
-        }));
+        const response = data.response;
+        if (response.type === 'multimodal') {
+          // Add text message
+          dispatch(addMessage({
+            chatId: currentChat.id,
+            content: response.text,
+            isUser: false
+          }));
+          // Add image message
+          dispatch(addMessage({
+            chatId: currentChat.id,
+            imageData: `data:${response.mimeType};base64,${response.base64Data}`,
+            isUser: false
+          }));
+        } else if (response.type === 'text') {
+          dispatch(addMessage({
+            chatId: currentChat.id,
+            content: response.text,
+            isUser: false
+          }));
+        } else if (response.type === 'image') {
+          dispatch(addMessage({
+            chatId: currentChat.id,
+            imageData: `data:${response.mimeType};base64,${response.base64Data}`,
+            isUser: false
+          }));
+        }
       }
       setIsLoadingResponse(false);
     },

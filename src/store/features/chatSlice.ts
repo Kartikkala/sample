@@ -13,10 +13,12 @@ export interface Chat {
 export interface Message {
   id: string;
   chat_id: string;
-  content: string;
+  content?: string;
+  imageData?: string;
   is_user: boolean;
   created_at: string;
 }
+
 
 export interface Model {
   id: string;
@@ -69,8 +71,13 @@ export const createNewChat = createAsyncThunk(
 
 export const addMessage = createAsyncThunk(
   'chat/addMessage',
-  async ({ chatId, content, isUser }: { chatId: string; content: string; isUser: boolean }) => {
-    const message = await trpc.chat.addMessage.mutate({ chatId, content, isUser });
+  async ({ chatId, content, imageData, isUser }: { 
+    chatId: string; 
+    content?: string; 
+    imageData?: string;
+    isUser: boolean 
+  }) => {
+    const message = await trpc.chat.addMessage.mutate({ chatId, content, imageData, isUser });
     return { chatId, message };
   }
 );
