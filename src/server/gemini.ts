@@ -9,10 +9,23 @@ if (!apiKey) {
 
 export const gemini = new GoogleGenAI({ apiKey });
 
-type GeminiResponse = 
+type GeminiResponse =
   | { type: 'text'; text: string }
   | { type: 'image'; mimeType: string; base64Data: string }
   | { type: 'multimodal'; text: string; mimeType: string; base64Data: string };
+
+type GeminiPart =
+  | { text: string }
+  | { inlineData: { mimeType: string; data: string } };
+
+// Type guards
+function isTextPart(part: GeminiPart): part is { text: string } {
+  return 'text' in part;
+}
+
+function isImagePart(part: GeminiPart): part is { inlineData: { mimeType: string; data: string } } {
+  return 'inlineData' in part;
+}
 
 export async function generateChatTitle(prompt: string): Promise<string> {
   const result = await gemini.models.generateContent({
@@ -25,8 +38,8 @@ export async function generateChatTitle(prompt: string): Promise<string> {
     ]
   });
 
-  const parts = result?.candidates?.[0]?.content?.parts;
-  const textPart = parts?.find((p: any) => p.text);
+  const parts = result?.candidates?.[0]?.content?.parts as GeminiPart[] | undefined;
+  const textPart = parts?.find(isTextPart);
   return textPart?.text?.trim() || "New Chat";
 }
 
@@ -49,15 +62,14 @@ export async function askGemini(prompt: string, modelId: string): Promise<Gemini
     }
   });
 
-  const parts = result?.candidates?.[0]?.content?.parts;
+  const parts = result?.candidates?.[0]?.content?.parts as GeminiPart[] | undefined;
 
   if (!parts || parts.length === 0) {
     return { type: "text", text: "No response from Gemini." };
   }
 
-  // Check if we have both text and image
-  const textPart = parts.find((p: any) => p.text);
-  const imagePart = parts.find((p: any) => p.inlineData);
+  const textPart = parts.find(isTextPart);
+  const imagePart = parts.find(isImagePart);
 
   if (textPart && imagePart?.inlineData?.mimeType?.startsWith("image")) {
     return {
@@ -68,7 +80,6 @@ export async function askGemini(prompt: string, modelId: string): Promise<Gemini
     };
   }
 
-  // If we have an image
   if (imagePart?.inlineData?.mimeType?.startsWith("image")) {
     return {
       type: "image",
@@ -77,7 +88,6 @@ export async function askGemini(prompt: string, modelId: string): Promise<Gemini
     };
   }
 
-  // If we have text
   if (textPart?.text) {
     return {
       type: "text",
