@@ -75,7 +75,19 @@ export const chatRouter = t.router({
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error adding message:', error);
+        throw error;
+      }
+
+      // Transform the response to match our Message interface
+      return {
+        id: data.id,
+        chat_id: data.chat_id,
+        content: data.content,
+        imageData: data.image_data,
+        is_user: data.is_user,
+        created_at: data.created_at
+      };
     })
 }); 
