@@ -5,11 +5,11 @@ export interface Model {
 
 export const availableModels: Model[] = [
   {
-    id: 'gemini-pro',
-    name: 'Gemini Pro',
+    id: 'gemini-2.0-flash',
+    name: 'gemini-2.0-flash',
   },
   {
-    id: 'gemini-pro-vision',
-    name: 'Gemini Pro Vision'
+    id: 'gemini-1.5-flash',
+    name: 'gemini-1.5-flash'
   }
 ]; 

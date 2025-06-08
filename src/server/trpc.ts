@@ -10,9 +10,9 @@ export const appRouter = t.router({
       return { greeting: `Hello` };
     }),
   askGemini: t.procedure
-    .input(z.object({ prompt: z.string() }))
+    .input(z.object({ prompt: z.string(), modelId: z.string() }))
     .mutation(async ({ input }) => {
-      return { response: await askGemini(input.prompt) };
+      return { response: await askGemini(input.prompt, input.modelId) };
     }),
   chat: chatRouter,
 });

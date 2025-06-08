@@ -14,6 +14,7 @@ export default function ChatPage() {
   const currentChat = useAppSelector((state) =>
     state.chat.chats.find(chat => chat.id === state.chat.currentChatId)
   );
+  const selectedModel = useAppSelector((state) => state.chat.selectedModel);
   const [input, setInput] = useState('');
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -67,7 +68,7 @@ export default function ChatPage() {
         }));
 
         setIsLoadingResponse(true);
-        askGeminiMutation.mutate({ prompt: input });
+        askGeminiMutation.mutate({ prompt: input, modelId: selectedModel.id });
       } else {
         await dispatch(addMessage({
           chatId: currentChat.id,
@@ -76,7 +77,7 @@ export default function ChatPage() {
         }));
 
         setIsLoadingResponse(true);
-        askGeminiMutation.mutate({ prompt: input });
+        askGeminiMutation.mutate({ prompt: input, modelId: selectedModel.id });
       }
 
       setInput('');

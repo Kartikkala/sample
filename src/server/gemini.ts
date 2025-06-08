@@ -1,7 +1,7 @@
 import { gemini } from "@/lib/gemini";
 
-export async function askGemini(prompt: string) {
-    const result = await gemini.models.generateContent({ model: 'gemini-2.0-flash-001',
+export async function askGemini(prompt: string, modelId: string) {
+    const result = await gemini.models.generateContent({ model: modelId,
         contents: prompt,
      });
   
