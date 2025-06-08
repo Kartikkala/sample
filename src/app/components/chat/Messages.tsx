@@ -27,23 +27,54 @@ export default function Messages() {
       }}
     >
       <div className="w-100 p-3">
-        {(!currentChat || currentChat.messages.length === 0) && (
+        {(!currentChat || !currentChat.messages?.length) && (
           <p className="text-muted text-center">No messages yet. Start a conversation!</p>
         )}
-        {currentChat?.messages.map((msg) => (
+        {currentChat?.messages?.map((msg) => (
           <div 
             key={msg.id} 
-            className={`p-2 mb-2 ${msg.isUser ? 'bg-primary' : 'bg-secondary'} `}
+            className="mb-3"
             style={{
-              borderRadius: '10px',
-              width: 'fit-content',
-              marginLeft: msg.isUser ? 'auto' : '0',
-              maxWidth: '80%',
-              wordBreak: 'break-word',
-              whiteSpace: 'pre-wrap'
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: msg.is_user ? 'flex-end' : 'flex-start',
+              width: '100%'
             }}
           >
-            {msg.content}
+            {msg.content && (
+              <div 
+                className={`p-3 ${msg.is_user ? 'bg-primary text-white' : 'bg-secondary'}`}
+                style={{
+                  borderRadius: '10px',
+                  maxWidth: '80%',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap'
+                }}
+              >
+                {msg.content}
+              </div>
+            )}
+            {msg.imageData && (
+              <div 
+                className="mt-2"
+                style={{
+                  maxWidth: '80%',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <img 
+                  src={msg.imageData} 
+                  alt="Generated image" 
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '400px',
+                    display: 'block'
+                  }}
+                />
+              </div>
+            )}
           </div>
         ))}
         <div ref={messagesEndRef} /> {/* Invisible element at the bottom */}
