@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { availableModels } from './config/models';
 
 const apiKey = process.env.GEMINI_API_KEY;
 
@@ -13,7 +14,28 @@ type GeminiResponse =
   | { type: 'image'; mimeType: string; base64Data: string }
   | { type: 'multimodal'; text: string; mimeType: string; base64Data: string };
 
+export async function generateChatTitle(prompt: string): Promise<string> {
+  const result = await gemini.models.generateContent({
+    model: availableModels[0].id,
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: `Generate a sentence of 5 words for this message: "${prompt}"` }]
+      }
+    ]
+  });
+
+  const parts = result?.candidates?.[0]?.content?.parts;
+  const textPart = parts?.find((p: any) => p.text);
+  return textPart?.text?.trim() || "New Chat";
+}
+
 export async function askGemini(prompt: string, modelId: string): Promise<GeminiResponse> {
+  const model = availableModels.find(m => m.id === modelId);
+  if (!model) {
+    throw new Error(`Model ${modelId} not found`);
+  }
+
   const result = await gemini.models.generateContent({
     model: modelId,
     contents: [
@@ -23,7 +45,7 @@ export async function askGemini(prompt: string, modelId: string): Promise<Gemini
       }
     ],
     config: {
-      responseModalities: ['Image', 'Text']
+      responseModalities: model.responseModalities
     }
   });
 

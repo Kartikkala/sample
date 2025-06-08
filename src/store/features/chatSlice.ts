@@ -63,8 +63,8 @@ export const fetchModels = createAsyncThunk(
 
 export const createNewChat = createAsyncThunk(
   'chat/createNewChat',
-  async ({ userId }: { userId: string }) => {
-    const chat = await trpc.chat.createChat.mutate({ userId });
+  async ({ userId, firstMessage }: { userId: string; firstMessage: string }) => {
+    const chat = await trpc.chat.createChat.mutate({ userId, firstMessage });
     return chat;
   }
 );

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { t } from '../trpc_init';
 import { supabase } from '../supabase';
 import { availableModels } from '../config/models';
+import { generateChatTitle } from '../gemini';
 
 export const chatRouter = t.router({
   getModels: t.procedure
@@ -39,14 +40,20 @@ export const chatRouter = t.router({
     }),
 
   createChat: t.procedure
-    .input(z.object({ userId: z.string() }))
+    .input(z.object({ 
+      userId: z.string(),
+      firstMessage: z.string()
+    }))
     .mutation(async ({ input }) => {
+      // Generate a title based on the first message
+      const title = await generateChatTitle(input.firstMessage);
+
       const { data: chat, error } = await supabase
         .from('chats')
         .insert([
           {
             user_id: input.userId,
-            title: 'New Chat'
+            title
           }
         ])
         .select()
@@ -90,4 +97,4 @@ export const chatRouter = t.router({
         created_at: data.created_at
       };
     })
-}); 
+});
