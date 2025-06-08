@@ -37,7 +37,13 @@ export default function Chats() {
   const handleNewChat = () => {
     if (user?.sub) {
       dispatch(createNewChat({ userId: user.sub }));
+      dispatch(toggleMenu());
     }
+  };
+
+  const handleChatSelect = (chatId: string) => {
+    dispatch(setCurrentChat(chatId));
+    dispatch(toggleMenu());
   };
 
   return (
@@ -78,7 +84,7 @@ export default function Chats() {
                 ? 'first-accent-color' 
                 : ''
             }`}
-            onClick={() => dispatch(setCurrentChat(chat.id))}
+            onClick={() => handleChatSelect(chat.id)}
           >
             {chat.title || 'New Chat'}
           </button>

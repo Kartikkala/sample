@@ -122,3 +122,15 @@ html{
   border-color: #282A2C;
   box-shadow: none;
 }
+.form-control:disabled {
+  background-color: #1B1C1D;
+  color: white;
+  border-color: #282A2C;
+  box-shadow: none;
+}
+.form-control{
+  background-color: #1B1C1D;
+  color: white;
+  border-color: #282A2C;
+  box-shadow: none;
+}

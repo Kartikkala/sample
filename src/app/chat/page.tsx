@@ -80,6 +80,8 @@ export default function ChatPage() {
     if (!input.trim() || !user) return;
 
     try {
+      setIsLoadingResponse(true);
+
       if (!currentChat) {
         const result = await dispatch(createNewChat({ 
           userId: user.sub!
@@ -91,7 +93,6 @@ export default function ChatPage() {
           isUser: true
         }));
 
-        setIsLoadingResponse(true);
         askGeminiMutation.mutate({ prompt: input, modelId: selectedModel.id });
       } else {
         await dispatch(addMessage({
@@ -100,7 +101,6 @@ export default function ChatPage() {
           isUser: true
         }));
 
-        setIsLoadingResponse(true);
         askGeminiMutation.mutate({ prompt: input, modelId: selectedModel.id });
       }
 
@@ -129,16 +129,26 @@ export default function ChatPage() {
               placeholder="Ask something..."
               rows={1}
               disabled={isLoadingResponse}
+              onFocus={(e) => {
+                e.target.placeholder = '';
+                e.target.style.caretColor = 'var(--text-primary)';
+              }}
+              onBlur={(e) => {
+                if (!input) {
+                  e.target.placeholder = 'Ask something...';
+                }
+              }}
               style={{
                 resize: 'none',
                 overflow: 'hidden',
                 maxHeight: '160px',
+                caretColor: 'transparent',
               }}
             />
           </div>
           <button 
             type="submit" 
-            className="btn bg-white rounded-circle flex-shrink-0 align-self-end"
+            className="btn bg-dark rounded-circle flex-shrink-0 align-self-end border-white"
             disabled={isLoadingResponse}
             style={{
               width: '40px',
@@ -147,22 +157,23 @@ export default function ChatPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
+
             }}
           >
             {isLoadingResponse ? (
-              <div className="spinner-border spinner-border-sm" role="status">
+              <div className="spinner-border spinner-border-sm text-warning" role="status" style={{ width: '1rem', height: '1rem' }}>
                 <span className="visually-hidden">Loading...</span>
               </div>
             ) : (
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                fill="currentColor" 
-                className="bi bi-send" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="white"
+                className="bi bi-send"
                 viewBox="0 0 16 16"
               >
-                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.916-.314l-.598-1.955-5.454 5.454a.5.5 0 0 1-.707-.707l5.454-5.454-1.955-.598a.5.5 0 0 1 .314-.916L15.314.036a.5.5 0 0 1 .54.11z"/>
+                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.916-.314l1.123-3.178a.5.5 0 0 0-.122-.51L6.833 9.14a.5.5 0 0 0-.51-.12l-3.178 1.123a.5.5 0 0 1-.314-.916L15.314.037a.5.5 0 0 1 .54.11ZM6.637 10.07l7.494-7.494-1.178 4.29-1.017 1.016-4.29 1.178Zm1.093 3.018L4.876 8.917l1.016-1.017 4.29-1.178 1.178 4.29Z"/>
               </svg>
             )}
           </button>

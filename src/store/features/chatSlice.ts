@@ -135,7 +135,7 @@ export const chatSlice = createSlice({
       })
       .addCase(createNewChat.fulfilled, (state, action) => {
         state.loading = false;
-        state.chats.push(action.payload);
+        state.chats = [action.payload, ...state.chats];
         state.currentChatId = action.payload.id;
       })
       .addCase(createNewChat.rejected, (state, action) => {

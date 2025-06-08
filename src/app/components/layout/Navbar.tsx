@@ -38,11 +38,11 @@ function ModelSelector() {
       >
         {selectedModel.name}
       </button>
-      <div className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+      <div className="dropdown-menu dropdown-menu-end first-background-color" aria-labelledby="dropdownMenuButton">
         {models.map((model) => (
           <button 
             key={model.id}
-            className={`dropdown-item ${model.id === selectedModel.id ? 'active' : ''}`}
+            className={`dropdown-item text-white ${model.id === selectedModel.id ? 'second-background-color' : ''}`}
             onClick={() => handleModelSelect(model)}
           >
             {model.name}
