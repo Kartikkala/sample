@@ -8,6 +8,7 @@ import { RootState, useAppDispatch } from '@/store/store';
 function ModelSelector() {
   const dispatch = useAppDispatch();
   const { models, selectedModel } = useSelector((state: RootState) => state.chat);
+
   useEffect(() => {
     dispatch(fetchModels());
   }, [dispatch]);
@@ -75,11 +76,16 @@ export default function Navbar() {
 
   return (
     <nav className="navbar navbar-dark first-background-color rounded-bottom"
-    style={{
-      position: 'relative',
-    }}>
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: '0.5rem',
+        zIndex: 1000,
+      }}>
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Hamburger Menu Button */}
         <button
           onClick={() => dispatch(toggleMenu())}
           className="p-0 bg-transparent border-0"

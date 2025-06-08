@@ -117,9 +117,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="container">
+    <div className="container-fluid px-4">
       <form onSubmit={handleSubmit}>
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 py-2">
           <div className="flex-grow-1 position-relative">
             <textarea
               ref={textareaRef}
@@ -157,7 +157,6 @@ export default function ChatPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
-
             }}
           >
             {isLoadingResponse ? (
