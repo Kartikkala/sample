@@ -39,10 +39,7 @@ const initialState: ChatState = {
   isMenuOpen: false,
   loading: false,
   error: null,
-  models: [
-    { id: 'gemini-pro', name: 'Gemini Pro' },
-    { id: 'gemini-pro-vision', name: 'Gemini Pro Vision' }
-  ],
+  models: [],
   selectedModel: { id: 'gemini-pro', name: 'Gemini Pro' }
 };
 
@@ -54,6 +51,13 @@ export const fetchChats = createAsyncThunk(
   }
 );
 
+export const fetchModels = createAsyncThunk(
+  'chat/fetchModels',
+  async () => {
+    const models = await trpc.chat.getModels.query();
+    return models;
+  }
+);
 
 export const createNewChat = createAsyncThunk(
   'chat/createNewChat',
@@ -100,6 +104,22 @@ export const chatSlice = createSlice({
       .addCase(fetchChats.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch chats';
+      })
+      // Fetch Models
+      .addCase(fetchModels.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchModels.fulfilled, (state, action) => {
+        state.loading = false;
+        state.models = action.payload;
+        if (action.payload.length > 0) {
+          state.selectedModel = action.payload[0];
+        }
+      })
+      .addCase(fetchModels.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch models';
       })
       // Create New Chat
       .addCase(createNewChat.pending, (state) => {

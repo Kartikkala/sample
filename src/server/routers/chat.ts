@@ -1,8 +1,13 @@
 import { z } from 'zod';
 import { t } from '../trpc_init';
 import { supabase } from '../supabase';
+import { availableModels } from '../config/models';
 
 export const chatRouter = t.router({
+  getModels: t.procedure
+    .query(async () => {
+      return availableModels;
+    }),
   getChats: t.procedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ input }) => {

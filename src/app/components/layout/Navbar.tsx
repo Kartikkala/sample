@@ -1,13 +1,16 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleMenu, setSelectedModel, type Model } from '@/store/features/chatSlice';
-import { RootState } from '@/store/store';
+import { useSelector } from 'react-redux';
+import { toggleMenu, setSelectedModel, type Model, fetchModels } from '@/store/features/chatSlice';
+import { RootState, useAppDispatch } from '@/store/store';
 
 function ModelSelector() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { models, selectedModel } = useSelector((state: RootState) => state.chat);
+  useEffect(() => {
+    dispatch(fetchModels());
+  }, [dispatch]);
 
   const handleModelSelect = (model: Model) => {
     dispatch(setSelectedModel(model));
@@ -41,7 +44,7 @@ function ModelSelector() {
 }
 
 export default function Navbar() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isMenuOpen = useSelector((state: RootState) => state.chat.isMenuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
 
