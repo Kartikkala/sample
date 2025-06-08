@@ -5,17 +5,37 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addMessage, createNewChat } from '@/store/features/chatSlice';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/navigation';
+import { trpc } from '../_trpc/client';
 
 export default function ChatPage() {
   const { user, error, isLoading } = useUser();
   const router = useRouter();
-
   const dispatch = useAppDispatch();
   const currentChat = useAppSelector((state) =>
     state.chat.chats.find(chat => chat.id === state.chat.currentChatId)
   );
   const [input, setInput] = useState('');
+  const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const askGeminiMutation = trpc.askGemini.useMutation({
+    onSuccess: (data) => {
+      if (currentChat) {
+        dispatch(addMessage({
+          chatId: currentChat.id,
+          message: {
+            content: data.response || '',
+            isUser: false
+          }
+        }));
+      }
+      setIsLoadingResponse(false);
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      setIsLoadingResponse(false);
+    }
+  });
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -33,7 +53,6 @@ export default function ChatPage() {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-
   if (!user) return <div>Not logged in</div>;
 
   const sendMessage = () => {
@@ -50,6 +69,9 @@ export default function ChatPage() {
           isUser: true
         }
       }));
+
+      setIsLoadingResponse(true);
+      askGeminiMutation.mutate({ prompt: input });
     } else {
       dispatch(addMessage({
         chatId: currentChat.id,
@@ -58,6 +80,9 @@ export default function ChatPage() {
           isUser: true
         }
       }));
+
+      setIsLoadingResponse(true);
+      askGeminiMutation.mutate({ prompt: input });
     }
 
     setInput('');
@@ -80,6 +105,7 @@ export default function ChatPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask something..."
               rows={1}
+              disabled={isLoadingResponse}
               style={{
                 resize: 'none',
                 overflow: 'hidden',
@@ -90,6 +116,7 @@ export default function ChatPage() {
           <button 
             type="submit" 
             className="btn btn-primary rounded-circle flex-shrink-0 align-self-end mb-2"
+            disabled={isLoadingResponse}
             style={{
               width: '40px',
               height: '40px',
@@ -99,16 +126,22 @@ export default function ChatPage() {
               justifyContent: 'center'
             }}
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
-              fill="currentColor" 
-              className="bi bi-send" 
-              viewBox="0 0 16 16"
-            >
-              <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.916-.314l-.598-1.955-5.454 5.454a.5.5 0 0 1-.707-.707l5.454-5.454-1.955-.598a.5.5 0 0 1 .314-.916L15.314.036a.5.5 0 0 1 .54.11z"/>
-            </svg>
+            {isLoadingResponse ? (
+              <div className="spinner-border spinner-border-sm" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            ) : (
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                fill="currentColor" 
+                className="bi bi-send" 
+                viewBox="0 0 16 16"
+              >
+                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.5.5 0 0 1-.916-.314l-.598-1.955-5.454 5.454a.5.5 0 0 1-.707-.707l5.454-5.454-1.955-.598a.5.5 0 0 1 .314-.916L15.314.036a.5.5 0 0 1 .54.11z"/>
+              </svg>
+            )}
           </button>
         </div>
       </form>

@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store } from '@/store/store';
 import Chats from "./components/chat/Chats";
 import BootstrapClient from '@/app/components/layout/BootstrapClient';
+import { Provider as TRPCProvider } from './_trpc/Provider';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,9 @@ export default function RootLayout({
           <BootstrapClient />
           <Navbar />
           <Chats/>
-          {children}
+            <TRPCProvider>
+              {children}
+            </TRPCProvider>
         </Provider>
       </body>
     </html>
