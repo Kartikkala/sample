@@ -19,16 +19,22 @@ export default function Messages() {
 
   return (
     <div 
-      className="container w-100 bg-secondary d-flex justify-content-center align-items-start flex-grow-1"
+      className="container w-100 second-background-color d-flex justify-content-center align-items-start flex-grow-1"
       style={{
-        height: 'calc(100vh - 150px)', // Adjust this value based on your layout
+        height: 'calc(100vh - 124px)', // Adjust this value based on your layout
         overflowY: 'auto',
         position: 'relative'
       }}
     >
-      <div className="w-100 p-3">
+      <div className="w-100 p-3" >
         {(!currentChat || !currentChat.messages?.length) && (
-          <p className="text-muted text-center">No messages yet. Start a conversation!</p>
+          <p className="second-text-color text-center"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}>No messages yet. Start a conversation!</p>
         )}
         {currentChat?.messages?.map((msg) => (
           <div 
@@ -43,7 +49,7 @@ export default function Messages() {
           >
             {msg.content && (
               <div 
-                className={`p-3 ${msg.is_user ? 'bg-primary text-white' : 'bg-secondary'}`}
+                className={`p-3 ${msg.is_user ? 'first-background-color first-text-color' : 'second-background-color'}`}
                 style={{
                   borderRadius: '10px',
                   maxWidth: '80%',

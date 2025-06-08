@@ -123,7 +123,7 @@ export default function ChatPage() {
           <div className="flex-grow-1 position-relative">
             <textarea
               ref={textareaRef}
-              className="form-control"
+              className="form-control rounded-pill second-background-color first-text-color first-border-color"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask something..."
@@ -138,7 +138,7 @@ export default function ChatPage() {
           </div>
           <button 
             type="submit" 
-            className="btn btn-primary rounded-circle flex-shrink-0 align-self-end mb-2"
+            className="btn bg-white rounded-circle flex-shrink-0 align-self-end"
             disabled={isLoadingResponse}
             style={{
               width: '40px',

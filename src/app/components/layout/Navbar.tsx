@@ -17,14 +17,24 @@ function ModelSelector() {
   };
 
   return (
-    <div className="dropdown">
+    <div className="dropdown" style={{ position: 'absolute', right: '10px', top: '0', bottom: '0', display: 'flex', alignItems: 'center' }}>
       <button 
-        className="btn btn-secondary dropdown-toggle" 
+        className="btn second-background-color first-text-color dropdown-toggle rounded-pill" 
         type="button" 
         id="dropdownMenuButton" 
         data-bs-toggle="dropdown" 
         aria-haspopup="true" 
         aria-expanded="false"
+        style={{
+          backgroundColor: '',
+          border: 'none',
+          color: 'white',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '150px',
+        }}
       >
         {selectedModel.name}
       </button>
@@ -64,7 +74,7 @@ export default function Navbar() {
   }, [isMenuOpen, dispatch]);
 
   return (
-    <nav className="navbar navbar-dark bg-dark"
+    <nav className="navbar navbar-dark first-background-color rounded-bottom"
     style={{
       position: 'relative',
     }}>
@@ -78,11 +88,8 @@ export default function Navbar() {
         >
           <HamburgerMenuButton isMenuOpen={isMenuOpen} />
         </button>
-
-        {/* App Title */}
-        <span className="navbar-brand mb-0 h1">ChatGPT Clone</span>
-        
-        {/* Model selector dropdown */}
+        <span className="navbar-brand mb-0 h1">Gemini</span>
+        <span></span>
         <ModelSelector />
       </div>
     </nav>

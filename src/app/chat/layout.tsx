@@ -6,10 +6,10 @@ export const metadata = {
 
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-dark text-white d-flex flex-column flex-grow-1">
+    <div className="first-background-color first-text-color d-flex flex-column flex-grow-1">
       <main className="d-flex flex-column flex-grow-1">
         <Messages />
-        <div className="bg-secondary rounded shadow p-4 border border-white">
+        <div className="second-background-color rounded shadow py-3 border first-border-color">
           {children}
         </div>
       </main>
