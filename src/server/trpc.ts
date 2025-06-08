@@ -1,8 +1,8 @@
-import { initTRPC } from '@trpc/server';
+
 import { z } from 'zod';
 import { askGemini } from './gemini';
-
-const t = initTRPC.create();
+import { chatRouter } from './routers/chat';
+import { t } from './trpc_init';
 
 export const appRouter = t.router({
   hello: t.procedure
@@ -14,6 +14,7 @@ export const appRouter = t.router({
     .mutation(async ({ input }) => {
       return { response: await askGemini(input.prompt) };
     }),
+  chat: chatRouter,
 });
 
 // Export type definition of API

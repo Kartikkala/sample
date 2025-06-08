@@ -1,5 +1,22 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { chatService, type Chat, type Message } from '@/services/chatService';
+import { trpc } from '@/app/_trpc/trpcVanilla';
+
+
+export interface Chat {
+  id: string;
+  user_id: string;
+  title: string;
+  created_at: string;
+  messages?: Message[];
+}
+
+export interface Message {
+  id: string;
+  chat_id: string;
+  content: string;
+  is_user: boolean;
+  created_at: string;
+}
 
 export interface Model {
   id: string;
@@ -32,15 +49,16 @@ const initialState: ChatState = {
 export const fetchChats = createAsyncThunk(
   'chat/fetchChats',
   async (userId: string) => {
-    const chats = await chatService.getChats(userId);
+    const chats = await trpc.chat.getChats.query({ userId });
     return chats;
   }
 );
 
+
 export const createNewChat = createAsyncThunk(
   'chat/createNewChat',
   async ({ userId }: { userId: string }) => {
-    const chat = await chatService.createChat(userId);
+    const chat = await trpc.chat.createChat.mutate({ userId });
     return chat;
   }
 );
@@ -48,10 +66,11 @@ export const createNewChat = createAsyncThunk(
 export const addMessage = createAsyncThunk(
   'chat/addMessage',
   async ({ chatId, content, isUser }: { chatId: string; content: string; isUser: boolean }) => {
-    const message = await chatService.addMessage(chatId, content, isUser);
+    const message = await trpc.chat.addMessage.mutate({ chatId, content, isUser });
     return { chatId, message };
   }
 );
+
 
 export const chatSlice = createSlice({
   name: 'chat',
