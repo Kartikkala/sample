@@ -2,14 +2,14 @@
 
 import { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleMenu, setSelectedModel } from '@/store/features/chatSlice';
+import { toggleMenu, setSelectedModel, type Model } from '@/store/features/chatSlice';
 import { RootState } from '@/store/store';
 
 function ModelSelector() {
   const dispatch = useDispatch();
   const { models, selectedModel } = useSelector((state: RootState) => state.chat);
 
-  const handleModelSelect = (model: typeof models[0]) => {
+  const handleModelSelect = (model: Model) => {
     dispatch(setSelectedModel(model));
   };
 

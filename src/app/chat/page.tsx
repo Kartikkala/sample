@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { addMessage, createNewChat } from '@/store/features/chatSlice';
+import { createNewChat, addMessage, setCurrentChat } from '@/store/features/chatSlice';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/navigation';
 import { trpc } from '../_trpc/client';
@@ -23,10 +23,8 @@ export default function ChatPage() {
       if (currentChat) {
         dispatch(addMessage({
           chatId: currentChat.id,
-          message: {
-            content: data.response || '',
-            isUser: false
-          }
+          content: data.response || '',
+          isUser: false
         }));
       }
       setIsLoadingResponse(false);
@@ -55,37 +53,37 @@ export default function ChatPage() {
   if (error) return <div>Error: {error.message}</div>;
   if (!user) return <div>Not logged in</div>;
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  const sendMessage = async () => {
+    if (!input.trim() || !user) return;
 
-    if (!currentChat) {
-      dispatch(createNewChat());
-      const newChatId = Date.now().toString();
-
-      dispatch(addMessage({
-        chatId: newChatId,
-        message: {
+    try {
+      if (!currentChat) {
+        const result = await dispatch(createNewChat({ userId: user.sub! })).unwrap();
+        await dispatch(setCurrentChat(result.id));
+        await dispatch(addMessage({
+          chatId: result.id,
           content: input,
           isUser: true
-        }
-      }));
+        }));
 
-      setIsLoadingResponse(true);
-      askGeminiMutation.mutate({ prompt: input });
-    } else {
-      dispatch(addMessage({
-        chatId: currentChat.id,
-        message: {
+        setIsLoadingResponse(true);
+        askGeminiMutation.mutate({ prompt: input });
+      } else {
+        await dispatch(addMessage({
+          chatId: currentChat.id,
           content: input,
           isUser: true
-        }
-      }));
+        }));
 
-      setIsLoadingResponse(true);
-      askGeminiMutation.mutate({ prompt: input });
+        setIsLoadingResponse(true);
+        askGeminiMutation.mutate({ prompt: input });
+      }
+
+      setInput('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsLoadingResponse(false);
     }
-
-    setInput('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {

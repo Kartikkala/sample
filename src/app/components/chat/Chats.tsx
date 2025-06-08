@@ -2,39 +2,45 @@
 
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { toggleMenu, createNewChat, setCurrentChat } from '@/store/features/chatSlice';
+import { toggleMenu, createNewChat, setCurrentChat, fetchChats } from '@/store/features/chatSlice';
+import { useUser } from '@auth0/nextjs-auth0';
+import { RootState } from '@/store/store';
 
 export default function Chats() {
   const dispatch = useAppDispatch();
-  const { isMenuOpen, chats, currentChatId } = useAppSelector((state) => state.chat);
+  const { user } = useUser();
+  const { isMenuOpen, chats, currentChatId } = useAppSelector((state: RootState) => state.chat);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        dispatch(toggleMenu());
-      }
-    };
+    if (user?.sub) {
+      dispatch(fetchChats(user.sub));
+    }
+  }, [dispatch, user?.sub]);
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      dispatch(toggleMenu());
+    }
+  };
+
+  useEffect(() => {
     if (isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen, dispatch]);
 
   const handleNewChat = () => {
-    dispatch(createNewChat());
-  };
-
-  const handleChatSelect = (chatId: string) => {
-    dispatch(setCurrentChat(chatId));
+    if (user?.sub) {
+      dispatch(createNewChat({ userId: user.sub }));
+    }
   };
 
   return (
-    <div
+    <div 
       ref={menuRef}
       className={`position-fixed top-0 start-0 vh-100 bg-dark text-white p-3 shadow transition-transform ${
         isMenuOpen ? 'translate-x-0' : 'translate-x-n100'
@@ -86,9 +92,9 @@ export default function Chats() {
                 ? 'btn-primary' 
                 : 'btn-outline-light'
             }`}
-            onClick={() => handleChatSelect(chat.id)}
+            onClick={() => dispatch(setCurrentChat(chat.id))}
           >
-            {chat.title}
+            {chat.title || 'New Chat'}
           </button>
         ))}
       </div>

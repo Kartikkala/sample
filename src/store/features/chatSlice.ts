@@ -1,103 +1,122 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { chatService, type Chat, type Message } from '@/services/chatService';
 
-interface Message {
+export interface Model {
   id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: number;
-}
-
-interface Chat {
-  id: string;
-  title: string;
-  messages: Message[];
-}
-
-interface Model {
-  id: number;
   name: string;
-  value: string;
 }
 
-interface ChatState {
+export interface ChatState {
   chats: Chat[];
   currentChatId: string | null;
   isMenuOpen: boolean;
+  loading: boolean;
+  error: string | null;
   models: Model[];
   selectedModel: Model;
 }
-
-const models: Model[] = [
-  {
-    id: 1,
-    name: "GPT-4",
-    value: "gpt-4"
-  },
-  {
-    id: 2,
-    name: "GPT-4o",
-    value: "gpt-4o"
-  },
-];
 
 const initialState: ChatState = {
   chats: [],
   currentChatId: null,
   isMenuOpen: false,
-  models: models,
-  selectedModel: models[0], // Default to first model
+  loading: false,
+  error: null,
+  models: [
+    { id: 'gemini-pro', name: 'Gemini Pro' },
+    { id: 'gemini-pro-vision', name: 'Gemini Pro Vision' }
+  ],
+  selectedModel: { id: 'gemini-pro', name: 'Gemini Pro' }
 };
 
-const chatSlice = createSlice({
+export const fetchChats = createAsyncThunk(
+  'chat/fetchChats',
+  async (userId: string) => {
+    const chats = await chatService.getChats(userId);
+    return chats;
+  }
+);
+
+export const createNewChat = createAsyncThunk(
+  'chat/createNewChat',
+  async ({ userId }: { userId: string }) => {
+    const chat = await chatService.createChat(userId);
+    return chat;
+  }
+);
+
+export const addMessage = createAsyncThunk(
+  'chat/addMessage',
+  async ({ chatId, content, isUser }: { chatId: string; content: string; isUser: boolean }) => {
+    const message = await chatService.addMessage(chatId, content, isUser);
+    return { chatId, message };
+  }
+);
+
+export const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
     toggleMenu: (state) => {
       state.isMenuOpen = !state.isMenuOpen;
     },
-    createNewChat: (state) => {
-      const newChat: Chat = {
-        id: Date.now().toString(),
-        title: 'New Chat',
-        messages: [],
-      };
-      state.chats.push(newChat);
-      state.currentChatId = newChat.id;
-    },
     setCurrentChat: (state, action: PayloadAction<string>) => {
       state.currentChatId = action.payload;
     },
-    addMessage: (state, action: PayloadAction<{ chatId: string; message: Omit<Message, 'id' | 'timestamp'> }>) => {
-      const { chatId, message } = action.payload;
-      const chat = state.chats.find(c => c.id === chatId);
-      if (chat) {
-        chat.messages.push({
-          ...message,
-          id: Date.now().toString(),
-          timestamp: Date.now(),
-        });
-      }
-    },
-    updateChatTitle: (state, action: PayloadAction<{ chatId: string; title: string }>) => {
-      const { chatId, title } = action.payload;
-      const chat = state.chats.find(c => c.id === chatId);
-      if (chat) {
-        chat.title = title;
-      }
-    },
     setSelectedModel: (state, action: PayloadAction<Model>) => {
       state.selectedModel = action.payload;
-    },
+    }
   },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Chats
+      .addCase(fetchChats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchChats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.chats = action.payload;
+      })
+      .addCase(fetchChats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch chats';
+      })
+      // Create New Chat
+      .addCase(createNewChat.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createNewChat.fulfilled, (state, action) => {
+        state.loading = false;
+        state.chats.push(action.payload);
+        state.currentChatId = action.payload.id;
+      })
+      .addCase(createNewChat.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to create chat';
+      })
+      // Add Message
+      .addCase(addMessage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addMessage.fulfilled, (state, action) => {
+        state.loading = false;
+        const chat = state.chats.find(c => c.id === action.payload.chatId);
+        if (chat) {
+          if (!chat.messages) {
+            chat.messages = [];
+          }
+          chat.messages.push(action.payload.message);
+        }
+      })
+      .addCase(addMessage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to add message';
+      });
+  }
 });
 
-export const {
-  toggleMenu,
-  createNewChat,
-  setCurrentChat,
-  addMessage,
-  updateChatTitle,
-  setSelectedModel,
-} = chatSlice.actions;
-
+export const { toggleMenu, setCurrentChat, setSelectedModel } = chatSlice.actions;
 export default chatSlice.reducer; 
